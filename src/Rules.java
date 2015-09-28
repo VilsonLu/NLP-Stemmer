@@ -1,5 +1,31 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 
 public class Rules {
+	
+	public List<String> prefixes;
+	
+	public Rules(){
+		loadPrefix();
+	}
+	
+	public void loadPrefix(){
+		prefixes = new ArrayList<String>();
+		try {
+			File file = new File("./resources/prefixes");
+			Scanner scanner = new Scanner(file);
+			while(scanner.hasNext()){
+				prefixes.add(scanner.next());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	// Suffixation
 	public String removeSuffixation(String word){
 		// if the end word ends in -han/-hin
@@ -16,7 +42,6 @@ public class Rules {
 	public String removeInfixation(String word){
 		String temp = word;
 		if(StemmerHelper.startsInConsonant(word)){
-			System.out.println(word.subSequence(1, 3));
 			if(word.subSequence(1, 3).equals("in") || word.subSequence(1, 3).equals("um")){
 				temp = word.substring(0, 1) + word.substring(3, word.length());
 			}
@@ -27,12 +52,18 @@ public class Rules {
 	public String removePrefixation(String word){
 		String temp = word;
 		// 3 length prefixes
-		if(word.startsWith("mag") || word.startsWith("pag")){
-			temp = temp.substring(3,word.length());
-			if(temp.startsWith("-")){
-				temp = temp.substring(1);
+		for(String s: prefixes){
+			if(word.startsWith(s)){
+				temp = temp.substring(s.length()+1,word.length());
+				
+				if(temp.startsWith("-")){
+					temp = temp.substring(1);
+				}
+				
+				return temp;
 			}
 		}
+	
 		return temp;
 	}
 }
